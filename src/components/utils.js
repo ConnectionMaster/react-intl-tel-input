@@ -132,10 +132,10 @@ export default {
     return (
       element.offsetHeight +
       parseFloat(
-        window.getComputedStyle(element).getPropertyValue('margin-top')
+        window.getComputedStyle(element).getPropertyValue('margin-top'),
       ) +
       parseFloat(
-        window.getComputedStyle(element).getPropertyValue('margin-bottom')
+        window.getComputedStyle(element).getPropertyValue('margin-bottom'),
       )
     );
   },
@@ -148,7 +148,7 @@ export default {
     countryCode,
     ignoreOnlyCountriesOption,
     allowFail,
-    errorHandler
+    errorHandler,
   ) {
     const countryList = ignoreOnlyCountriesOption
       ? AllCountries.getCountries()

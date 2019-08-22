@@ -40,8 +40,8 @@ export default class CountryList extends Component {
         ? window.pageYOffset
         : (
           document.documentElement ||
-            document.body.parentNode ||
-            document.body
+          document.body.parentNode ||
+          document.body
         ).scrollTop;
     const windowHeight =
       window.innerHeight ||
@@ -125,12 +125,14 @@ export default class CountryList extends Component {
   render() {
     let options = '';
     const preferredCountries = this.props.preferredCountries;
+
     let preferredOptions = null;
     const countries = this.props.countries;
     const className = classNames({
       'country-list': true,
       hide: !this.props.showDropdown,
     });
+
     let divider = null;
 
     if (preferredCountries.length) {

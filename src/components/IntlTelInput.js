@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import _ from 'underscore.deferred';
 import StylePropTypes from 'react-style-proptype';
-import AllCountries from './AllCountries';
+import allCountries from './AllCountries';
 import FlagDropDown from './FlagDropDown';
 import TelInput from './TelInput';
 import utils from './utils';
@@ -183,10 +183,10 @@ class IntlTelInput extends Component {
       if (this.props.preferredCountries.length > 0) {
         countryData = utils.getCountryData(
           this.countries,
-          this.props.preferredCountries[0]
+          this.props.preferredCountries[0],
         );
       } else {
-        countryData = AllCountries.getCountries()[0];
+        countryData = allCountries.getCountries()[0];
       }
     }
 
@@ -225,7 +225,7 @@ class IntlTelInput extends Component {
         countryCode,
         false,
         false,
-        this.props.noCountryDataHandler
+        this.props.noCountryDataHandler,
       )
       : {};
 
@@ -262,13 +262,13 @@ class IntlTelInput extends Component {
     if (countryCode && countryCode !== 'auto') {
       selectedIndex = utils.findIndex(
         this.preferredCountries,
-        country => country.iso2 === countryCode
+        country => country.iso2 === countryCode,
       );
 
       if (selectedIndex === -1) {
         selectedIndex = utils.findIndex(
           this.countries,
-          country => country.iso2 === countryCode
+          country => country.iso2 === countryCode,
         );
         if (selectedIndex === -1) selectedIndex = 0;
         selectedIndex += this.preferredCountries.length;
@@ -281,7 +281,7 @@ class IntlTelInput extends Component {
 
     const newNumber = this.updateDialCode(
       this.selectedCountryData.dialCode,
-      !isInit
+      !isInit,
     );
 
     this.setState(
@@ -316,10 +316,10 @@ class IntlTelInput extends Component {
             currentNumber,
             this.selectedCountryData,
             fullNumber,
-            isValid
+            isValid,
           );
         }
-      }
+      },
     );
   };
 
@@ -328,7 +328,7 @@ class IntlTelInput extends Component {
     if (window.intlTelInputUtils) {
       return window.intlTelInputUtils.getExtension(
         this.getFullNumber(number),
-        this.selectedCountryData.iso2
+        this.selectedCountryData.iso2,
       );
     }
 
@@ -341,7 +341,7 @@ class IntlTelInput extends Component {
       return window.intlTelInputUtils.formatNumber(
         this.getFullNumber(number),
         this.selectedCountryData.iso2,
-        format
+        format,
       );
     }
 
@@ -416,7 +416,7 @@ class IntlTelInput extends Component {
         this.props.onlyCountries,
         inArray =>
           // if country is in array
-          inArray !== -1
+          inArray !== -1,
       );
     } else if (this.props.excludeCountries.length) {
       // process excludeCountries option
@@ -424,10 +424,10 @@ class IntlTelInput extends Component {
         this.props.excludeCountries,
         inArray =>
           // if country is not in array
-          inArray === -1
+          inArray === -1,
       );
     } else {
-      this.countries = AllCountries.getCountries();
+      this.countries = allCountries.getCountries();
     }
   };
 
@@ -445,7 +445,7 @@ class IntlTelInput extends Component {
           this.addCountryCode(
             this.countryCodes,
             c.iso2,
-            c.dialCode + c.areaCodes[j]
+            c.dialCode + c.areaCodes[j],
           );
         }
       }
@@ -461,7 +461,7 @@ class IntlTelInput extends Component {
       const countryData = utils.getCountryData(
         this.countries,
         countryCode,
-        true
+        true,
       );
 
       if (countryData) {
@@ -594,6 +594,7 @@ class IntlTelInput extends Component {
     const current = this.flagDropDown.querySelectorAll('.highlight')[0];
     const prevElement = current ? current.previousElementSibling : undefined;
     const nextElement = current ? current.nextElementSibling : undefined;
+
     let next = key === this.keys.UP ? prevElement : nextElement;
 
     if (next) {
@@ -633,7 +634,7 @@ class IntlTelInput extends Component {
         () => {
           this.setFlag(this.state.countryCode);
           this.unbindDocumentClick();
-        }
+        },
       );
     }
   };
@@ -645,7 +646,7 @@ class IntlTelInput extends Component {
         const listItem = this.flagDropDown.querySelector(
           `.country-list [data-country-code="${
             this.countries[i].iso2
-          }"]:not(.preferred)`
+          }"]:not(.preferred)`,
         );
 
         const selectedIndex = utils.retrieveLiIndex(listItem);
@@ -677,7 +678,7 @@ class IntlTelInput extends Component {
       number = window.intlTelInputUtils.formatNumber(
         number,
         this.selectedCountryData.iso2,
-        format
+        format,
       );
     }
 
@@ -698,7 +699,7 @@ class IntlTelInput extends Component {
       number = window.intlTelInputUtils.formatNumber(
         number,
         this.selectedCountryData.iso2,
-        format
+        format,
       );
     }
 
@@ -715,7 +716,7 @@ class IntlTelInput extends Component {
         }
 
         this.unbindDocumentClick();
-      }
+      },
     );
   };
 
@@ -744,6 +745,7 @@ class IntlTelInput extends Component {
 
     // try and extract valid dial code from input
     const dialCode = this.getDialCode(number);
+
     let countryCode = null;
 
     if (dialCode) {
@@ -755,7 +757,8 @@ class IntlTelInput extends Component {
 
       // if a matching country is not already selected
       // (or this is an unknown NANP area code): choose the first in the list
-      if (!alreadySelected || this.isUnknownNanp(number, dialCode)) {
+      // 有bug,ca输数字超3个时,切换为美国 modified by lyby 20190312
+      if (!alreadySelected && this.isUnknownNanp(number, dialCode)) {
         // if using onlyCountries option, countryCodes[0] may be empty,
         // so we must find the first non-empty index
         for (let j = 0; j < countryCodes.length; j++) {
@@ -788,11 +791,11 @@ class IntlTelInput extends Component {
 
     // build instance country array
     this.countries = [];
-    for (i = 0; i < AllCountries.getCountries().length; i++) {
+    for (i = 0; i < allCountries.getCountries().length; i++) {
       if (
-        processFunc(countryArray.indexOf(AllCountries.getCountries()[i].iso2))
+        processFunc(countryArray.indexOf(allCountries.getCountries()[i].iso2))
       ) {
-        this.countries.push(AllCountries.getCountries()[i]);
+        this.countries.push(allCountries.getCountries()[i]);
       }
     }
   };
@@ -800,8 +803,8 @@ class IntlTelInput extends Component {
   // prepare all of the country data, including onlyCountries and preferredCountries options
   processCountryData = () => {
     // format countries data to what is necessary for component function
-    // defaults to data defined in `AllCountries`
-    AllCountries.initialize(this.props.countriesData);
+    // defaults to data defined in `allCountries`
+    allCountries.initialize(this.props.countriesData);
 
     // process onlyCountries or excludeCountries array if present
     this.processAllCountries.call(this);
@@ -826,7 +829,7 @@ class IntlTelInput extends Component {
         this.selectedCountryData,
         fullNumber,
         this.getExtension(value),
-        e
+        e,
       );
     }
   };
@@ -861,7 +864,7 @@ class IntlTelInput extends Component {
           if (highlightItem) {
             this.scrollTo(highlightItem, true);
           }
-        }
+        },
       );
     } else if (showDropdown) {
       // need to hide dropdown when click on opened flag button
@@ -882,11 +885,12 @@ class IntlTelInput extends Component {
       this.selectedCountryData
     ) {
       const numberType = window.intlTelInputUtils.numberType[props.numberType];
+
       let placeholder = this.selectedCountryData.iso2
         ? window.intlTelInputUtils.getExampleNumber(
           this.selectedCountryData.iso2,
           this.nationalMode,
-          numberType
+          numberType,
         )
         : '';
 
@@ -895,7 +899,7 @@ class IntlTelInput extends Component {
       if (typeof props.customPlaceholder === 'function') {
         placeholder = props.customPlaceholder(
           placeholder,
-          this.selectedCountryData
+          this.selectedCountryData,
         );
       }
 
@@ -914,7 +918,7 @@ class IntlTelInput extends Component {
         if (!this.state.showDropdown) {
           this.unbindDocumentClick();
         }
-      }
+      },
     );
   };
 
@@ -923,7 +927,7 @@ class IntlTelInput extends Component {
     try {
       const container = this.flagDropDown.querySelector('.country-list');
       const containerHeight = parseFloat(
-        window.getComputedStyle(container).getPropertyValue('height')
+        window.getComputedStyle(container).getPropertyValue('height'),
       );
       const containerTop = utils.offset(container).top;
       const containerBottom = containerTop + containerHeight;
@@ -931,6 +935,7 @@ class IntlTelInput extends Component {
       const elementTop = utils.offset(element).top;
       const elementBottom = elementTop + elementHeight;
       const middleOffset = containerHeight / 2 - elementHeight / 2;
+
       let newScrollTop = elementTop - containerTop + container.scrollTop;
 
       if (elementTop < containerTop) {
@@ -1051,7 +1056,7 @@ class IntlTelInput extends Component {
     return window.intlTelInputUtils
       ? this.getNumber(
         number,
-        window.intlTelInputUtils.numberFormat.INTERNATIONAL
+        window.intlTelInputUtils.numberFormat.INTERNATIONAL,
       )
       : number;
   };
@@ -1066,7 +1071,7 @@ class IntlTelInput extends Component {
         newNumber,
         this.selectedCountryData,
         fullNumber,
-        this.getExtension(newNumber)
+        this.getExtension(newNumber),
       );
     }
   };
@@ -1109,7 +1114,7 @@ class IntlTelInput extends Component {
       },
       () => {
         window.removeEventListener('scroll', this.handleWindowScroll);
-      }
+      },
     );
   };
 
@@ -1191,7 +1196,7 @@ class IntlTelInput extends Component {
     cursorPosition = utils.getCursorPositionAfterFormating(
       previousStringBeforeCursor,
       previousValue,
-      value
+      value,
     );
 
     if (this.props.value !== undefined) {
@@ -1202,7 +1207,7 @@ class IntlTelInput extends Component {
         () => {
           this.updateFlagFromNumber(value);
           this.notifyPhoneNumberChange(value);
-        }
+        },
       );
     } else {
       this.setState(
@@ -1213,7 +1218,7 @@ class IntlTelInput extends Component {
         () => {
           this.updateFlagFromNumber(value);
           this.notifyPhoneNumberChange(value);
-        }
+        },
       );
     }
   };
@@ -1325,7 +1330,7 @@ IntlTelInput.propTypes = {
   value: PropTypes.string,
   /** The value used to initialize input. This will only work on uncontrolled component. */
   defaultValue: PropTypes.string,
-  /** Countries data can be configured, it defaults to data defined in `AllCountries`. */
+  /** Countries data can be configured, it defaults to data defined in `allCountries`. */
   countriesData: PropTypes.arrayOf(PropTypes.array),
   /**
    * Whether or not to allow the dropdown. If disabled, there is no dropdown arrow, and the selected flag is not clickable.
@@ -1347,7 +1352,7 @@ IntlTelInput.propTypes = {
    * but with the dial code separated.
    * */
   separateDialCode: PropTypes.bool,
-  /** Default country. */
+  /** Default country,please toLowerCase. */
   defaultCountry: PropTypes.string,
   /** GeoIp lookup function. */
   geoIpLookup: PropTypes.func,
@@ -1396,7 +1401,7 @@ IntlTelInput.defaultProps = {
   fieldId: '',
   defaultValue: '',
   // define the countries that'll be present in the dropdown
-  // defaults to the data defined in `AllCountries`
+  // defaults to the data defined in `allCountries`
   countriesData: null,
   // whether or not to allow the dropdown
   allowDropdown: true,
@@ -1425,7 +1430,7 @@ IntlTelInput.defaultProps = {
   // display only these countries
   onlyCountries: [],
   // the countries at the top of the list. defaults to united states and united kingdom
-  preferredCountries: ['us', 'gb'],
+  preferredCountries: ['cn', 'ca', 'us'],
   onPhoneNumberChange: null,
   onPhoneNumberBlur: null,
   onSelectFlag: null,
@@ -1442,3 +1447,4 @@ IntlTelInput.defaultProps = {
 };
 
 export default IntlTelInput;
+export const AllCountries = allCountries;
