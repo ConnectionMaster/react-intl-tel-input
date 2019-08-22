@@ -43,7 +43,7 @@ const getClientEnvironment = publicUrl => {
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: JSON.stringify(publicUrl),
         BUILD_NAME: BUILD_NAME,
-      }
+      },
     );
 
   return {
